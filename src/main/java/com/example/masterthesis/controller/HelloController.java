@@ -1,4 +1,4 @@
-package com.example.masterthesis;
+package com.example.masterthesis.controller;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;

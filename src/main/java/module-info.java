@@ -12,4 +12,6 @@ module com.example.masterthesis {
 
     opens com.example.masterthesis to javafx.fxml;
     exports com.example.masterthesis;
+    exports com.example.masterthesis.controller;
+    opens com.example.masterthesis.controller to javafx.fxml;
 }
