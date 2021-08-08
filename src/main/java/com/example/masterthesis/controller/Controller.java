@@ -2,6 +2,7 @@ package com.example.masterthesis.controller;
 
 import com.example.masterthesis.automat.CABuilder;
 import com.example.masterthesis.automat.CelluralAutomata2D;
+import com.example.masterthesis.data.SaveToFile;
 import com.example.masterthesis.structure.twoD.BoundaryCondition;
 import com.example.masterthesis.structure.twoD.Neighbourhood2D;
 import javafx.animation.AnimationTimer;
@@ -16,6 +17,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Random;
 import java.util.ResourceBundle;
@@ -50,12 +52,9 @@ public class Controller implements Initializable {
     public Button monteCarlo;
     public TextField MCcounter;
     public Button stopMC;
+    public Button saveButton;
 
     AnimationTimer animationTimer;
-    AnimationTimer monteCarloAnimation;
-
-
-    // int size;//wielkość jednej komórki
     GraphicsContext gc;
     Random r;
     double k;
@@ -96,6 +95,8 @@ public class Controller implements Initializable {
         MCcounter.setEditable(false);
         monteCarlo.setDisable(true);
         stopMC.setDisable(true);
+        saveButton.setDisable(true);
+        Allgrowth.setDisable(true);
 
 
         animationTimer = new AnimationTimer() {
@@ -108,7 +109,6 @@ public class Controller implements Initializable {
                 simulation((Neighbourhood2D) neighbourhood.getValue());
 
                 try {
-                    //slowing down for better animation
                     Thread.sleep(50);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -134,12 +134,6 @@ public class Controller implements Initializable {
         if (homogeneous.equals(t) && Integer.parseInt(rowAmount.getText()) > 1 &&
                 Integer.parseInt(rowAmount.getText()) < (height / (2 * (int) squareSize.getValue())) && Integer.parseInt(columnAmount.getText()) > 1 &&
                 Integer.parseInt(columnAmount.getText()) < (width / (2 * (int) squareSize.getValue()))) {
-//            && height%Integer.parseInt(rowAmount.getText()) == 0 &&
-//                    width%Integer.parseInt(columnAmount.getText()) == 0
-            //sprawdzam by w w r i c nie było ciągiem komórek mają być przerwy
-            //sprawdzam by dlugosc byla podzielna przez ilosc
-
-            //   setBC(b);
             builder.buildHomogenous(Integer.parseInt(columnAmount.getText()), Integer.parseInt(rowAmount.getText()));
             draw(gc);
         } else if (withRadius.equals(t)) {
@@ -158,10 +152,7 @@ public class Controller implements Initializable {
 
         } else if (random.equals(t) && Integer.parseInt(amount.getText()) > 0) {
 
-            //sprawdzam by zajęte było max 1/100 przestrzeni
-
             builder.buildRandom(Integer.parseInt(amount.getText()));
-            // setBC(b);
             draw(gc);
         } else if (clicking.equals(t)) {
 
@@ -177,8 +168,6 @@ public class Controller implements Initializable {
                     draw(gc);
                 }
             });
-            // setBC(b);
-
         }
 
     }
@@ -192,21 +181,13 @@ public class Controller implements Initializable {
     }
 
     public void simulation(Neighbourhood2D n) {
-
-
         builder.simulation(n, (BoundaryCondition) BC.getValue());
         draw(gc);
-
-
     }
 
     public void begin(ActionEvent actionEvent) {
 
         if (limitSpace()) {
-
-//            monteCarloAnimation.stop();
-//            monteCarlo.setDisable(true);
-//            stopMC.setDisable(true);
             time = 0;
             c = 0;
             MCcounter.setText(String.valueOf(c));
@@ -217,12 +198,10 @@ public class Controller implements Initializable {
             automat = new CelluralAutomata2D((int) matrix.getWidth() / (int) squareSize.getValue(), (int) matrix.getHeight() / (int) squareSize.getValue());
             builder = new CABuilder(automat);
 
-
             Pane.setPrefWidth(gridPane.getPrefWidth());
             Pane.setPrefHeight(gridPane.getPrefHeight());
-
-
             build(type.getValue(), BC.getValue());
+            Allgrowth.setDisable(false);
 
         }
     }
@@ -246,22 +225,6 @@ public class Controller implements Initializable {
             }
         }
 
-
-//        //creating grid on board
-//        // vertical lines
-//        int size = (int) squareSize.getValue();
-//        g.setStroke(Color.GRAY);
-//        for(int i = 0 ; i <= matrix.getWidth() ; i+=size){
-//            g.strokeLine(i, 0, i, matrix.getHeight() );
-//        }
-//
-//        // horizontal lines
-//        g.setStroke(Color.GRAY);
-//        for(int i = 0 ; i <= matrix.getHeight() ; i+=size){
-//            g.strokeLine(0, i, matrix.getWidth(), i);
-//        }
-
-
     }
 
 
@@ -282,9 +245,19 @@ public class Controller implements Initializable {
     public void Growth(ActionEvent actionEvent) {
 
         animationTimer.start();
+        saveButton.setDisable(false);
+
     }
 
 
+    public void saveDataCell(ActionEvent actionEvent) {
+        SaveToFile s = new SaveToFile();
+        try {
+            s.saveData(builder);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
 
 

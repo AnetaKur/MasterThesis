@@ -8,7 +8,7 @@ import javafx.scene.paint.Color;
 import java.util.*;
 
 public class CABuilder {
-    CelluralAutomata2D CA;
+    public CelluralAutomata2D CA;
     int height;
     int width;
     Random r;
@@ -89,7 +89,9 @@ public class CABuilder {
                 CA.matrix[i][j].setState(k);
                 k++;
 
-                CA.matrix[i][j].setCellColor(generateColor());
+                Color cc = generateColor();
+                CA.matrix[i][j].setCellColor(cc);
+                types.put(i, cc);
             }
         }
 
@@ -615,5 +617,9 @@ public class CABuilder {
         }
 
         return is;
+    }
+
+    public int getTypeSize() {
+        return types.size();
     }
 }

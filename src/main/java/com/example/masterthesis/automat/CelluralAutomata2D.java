@@ -33,4 +33,8 @@ public class CelluralAutomata2D {
     public Cell2D[][] getMatrix() {
         return matrix;
     }
+
+    public Cell2D getCell(int i, int j) {
+        return matrix[i][j];
+    }
 }
